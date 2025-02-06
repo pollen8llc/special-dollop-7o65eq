@@ -1,0 +1,109 @@
+# Prometheus configuration for LinkedIn Profiles Gallery application
+# Version: v2.45.0
+
+# Global configuration
+global:
+  scrape_interval: 15s     # How frequently to scrape targets
+  evaluation_interval: 15s  # How frequently to evaluate rules
+  scrape_timeout: 10s      # How long until a scrape request times out
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+# Rule files specifying alert conditions
+rule_files:
+  - /etc/prometheus/rules/alert.rules
+
+# Scrape configurations
+scrape_configs:
+  # Self monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    metrics_path: /metrics
+    scheme: http
+
+  # LinkedIn Profiles application monitoring
+  - job_name: 'linkedin-profiles-app'
+    static_configs:
+      - targets: ['web:3000', 'backend:4000']
+    metrics_path: /metrics
+    scheme: http
+    scrape_interval: 10s
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        target_label: service
+        replacement: linkedin-profiles
+
+  # PostgreSQL database monitoring
+  - job_name: 'postgresql'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    metrics_path: /metrics
+    scheme: http
+    scrape_interval: 30s
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        target_label: service
+        replacement: database
+
+  # Redis cache monitoring
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    metrics_path: /metrics
+    scheme: http
+    scrape_interval: 30s
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        target_label: service
+        replacement: cache
+
+# Alert rules
+groups:
+  - name: application_alerts
+    rules:
+      # High response time alert
+      - alert: HighResponseTime
+        expr: http_request_duration_seconds > 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High response time detected
+          description: Response time is above 500ms for 5 minutes
+
+      # High error rate alert  
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: High error rate detected
+          description: Error rate is above 10% for 5 minutes
+
+  - name: infrastructure_alerts  
+    rules:
+      # Database connections alert
+      - alert: DatabaseConnectionsHigh
+        expr: postgresql_connections > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High database connections
+          description: Database connections above 80% of limit
+
+      # Redis memory usage alert
+      - alert: RedisMemoryHigh
+        expr: redis_memory_used_bytes > 230000000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High Redis memory usage
+          description: Redis memory usage above 230MB
