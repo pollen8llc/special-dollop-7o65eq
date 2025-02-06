@@ -1,0 +1,224 @@
+openapi: 3.0.0
+info:
+  title: Profile Schema Definitions
+  version: 1.0.0
+  description: OpenAPI schema definitions for profile-related operations in the LinkedIn Profiles Gallery
+
+components:
+  schemas:
+    Profile:
+      type: object
+      required:
+        - id
+        - userId
+        - headline
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the profile
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        userId:
+          type: string
+          format: uuid
+          description: ID of the user who owns this profile
+          example: "123e4567-e89b-12d3-a456-426614174001"
+        headline:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Professional headline or title
+          example: "Senior Software Engineer at Tech Corp"
+        bio:
+          type: string
+          nullable: true
+          maxLength: 1000
+          description: Detailed professional biography
+          example: "Experienced software engineer with expertise in cloud architecture..."
+        avatarUrl:
+          type: string
+          nullable: true
+          format: uri
+          description: URL to profile avatar image
+          example: "https://example.com/avatars/123.jpg"
+        socialLinks:
+          type: object
+          nullable: true
+          properties:
+            linkedin:
+              type: string
+              format: uri
+              description: LinkedIn profile URL
+              example: "https://linkedin.com/in/johndoe"
+            github:
+              type: string
+              format: uri
+              description: GitHub profile URL
+              example: "https://github.com/johndoe"
+            website:
+              type: string
+              format: uri
+              description: Personal website URL
+              example: "https://johndoe.com"
+        experiences:
+          type: array
+          description: List of professional experiences
+          items:
+            $ref: '#/components/schemas/Experience'
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the profile was created
+          example: "2023-01-01T00:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the profile was last updated
+          example: "2023-01-01T00:00:00Z"
+
+    CreateProfileRequest:
+      type: object
+      required:
+        - headline
+      properties:
+        headline:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Professional headline or title
+          example: "Senior Software Engineer at Tech Corp"
+        bio:
+          type: string
+          nullable: true
+          maxLength: 1000
+          description: Detailed professional biography
+          example: "Experienced software engineer with expertise in cloud architecture..."
+        avatarUrl:
+          type: string
+          nullable: true
+          format: uri
+          description: URL to profile avatar image
+          example: "https://example.com/avatars/123.jpg"
+        socialLinks:
+          type: object
+          nullable: true
+          properties:
+            linkedin:
+              type: string
+              format: uri
+              description: LinkedIn profile URL
+              example: "https://linkedin.com/in/johndoe"
+            github:
+              type: string
+              format: uri
+              description: GitHub profile URL
+              example: "https://github.com/johndoe"
+            website:
+              type: string
+              format: uri
+              description: Personal website URL
+              example: "https://johndoe.com"
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        headline:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Professional headline or title
+          example: "Lead Software Engineer at Tech Corp"
+        bio:
+          type: string
+          nullable: true
+          maxLength: 1000
+          description: Detailed professional biography
+          example: "Experienced software engineer with expertise in cloud architecture..."
+        avatarUrl:
+          type: string
+          nullable: true
+          format: uri
+          description: URL to profile avatar image
+          example: "https://example.com/avatars/123.jpg"
+        socialLinks:
+          type: object
+          nullable: true
+          properties:
+            linkedin:
+              type: string
+              format: uri
+              description: LinkedIn profile URL
+              example: "https://linkedin.com/in/johndoe"
+            github:
+              type: string
+              format: uri
+              description: GitHub profile URL
+              example: "https://github.com/johndoe"
+            website:
+              type: string
+              format: uri
+              description: Personal website URL
+              example: "https://johndoe.com"
+
+    ProfileResponse:
+      type: object
+      required:
+        - success
+        - error
+        - data
+      properties:
+        success:
+          type: boolean
+          description: Indicates if the operation was successful
+          example: true
+        error:
+          type: string
+          nullable: true
+          description: Error message if operation failed
+          example: null
+        data:
+          $ref: '#/components/schemas/Profile'
+          description: Profile data
+
+    ProfileListResponse:
+      type: object
+      required:
+        - success
+        - error
+        - data
+        - page
+        - pageSize
+        - total
+      properties:
+        success:
+          type: boolean
+          description: Indicates if the operation was successful
+          example: true
+        error:
+          type: string
+          nullable: true
+          description: Error message if operation failed
+          example: null
+        data:
+          type: array
+          description: List of profiles
+          items:
+            $ref: '#/components/schemas/Profile'
+        page:
+          type: integer
+          minimum: 1
+          description: Current page number
+          example: 1
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Number of items per page
+          example: 10
+        total:
+          type: integer
+          minimum: 0
+          description: Total number of profiles
+          example: 50
