@@ -1,0 +1,136 @@
+[
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "userId": "7c4dfb24-0cb8-4774-8f73-7a147834ad0f",
+    "headline": "Senior Software Engineer",
+    "bio": "Passionate about building scalable web applications with modern technologies. Experienced in full-stack development with a focus on React and Node.js ecosystems.",
+    "avatarUrl": "https://example.com/avatars/john-doe.jpg",
+    "socialLinks": {
+      "linkedin": "https://linkedin.com/in/johndoe",
+      "github": "https://github.com/johndoe",
+      "website": "https://johndoe.dev"
+    },
+    "experiences": [
+      {
+        "id": "89d1f410-d32c-4eb4-95a7-b18ff3ac4402",
+        "profileId": "550e8400-e29b-41d4-a716-446655440000",
+        "title": "Senior Software Engineer",
+        "company": "Tech Corp",
+        "startDate": "2021-01-15T00:00:00.000Z",
+        "endDate": null,
+        "description": "Leading development of cloud-native applications using React, Node.js, and AWS.",
+        "createdAt": "2021-01-15T00:00:00.000Z",
+        "updatedAt": "2023-09-20T14:30:00.000Z"
+      },
+      {
+        "id": "12c8e620-f45d-4c1a-8b29-7d9f2bc44501",
+        "profileId": "550e8400-e29b-41d4-a716-446655440000",
+        "title": "Software Engineer",
+        "company": "StartupCo",
+        "startDate": "2018-06-01T00:00:00.000Z",
+        "endDate": "2020-12-31T00:00:00.000Z",
+        "description": "Full-stack development with React and Node.js.",
+        "createdAt": "2018-06-01T00:00:00.000Z",
+        "updatedAt": "2020-12-31T00:00:00.000Z"
+      }
+    ],
+    "createdAt": "2018-06-01T00:00:00.000Z",
+    "updatedAt": "2023-09-20T14:30:00.000Z"
+  },
+  {
+    "id": "663f8500-f39c-42d4-b827-557766551111",
+    "userId": "8d5ec35-1dc9-5885-9e84-8b258945be0e",
+    "headline": "UX Designer",
+    "bio": null,
+    "avatarUrl": null,
+    "socialLinks": {
+      "linkedin": "https://linkedin.com/in/janesmith",
+      "github": null,
+      "website": null
+    },
+    "experiences": [
+      {
+        "id": "34e2f521-e43d-5d2b-a6b8-c29664535503",
+        "profileId": "663f8500-f39c-42d4-b827-557766551111",
+        "title": "UX Designer",
+        "company": "Design Studio Inc",
+        "startDate": "2020-03-01T00:00:00.000Z",
+        "endDate": null,
+        "description": null,
+        "createdAt": "2020-03-01T00:00:00.000Z",
+        "updatedAt": "2023-09-20T14:30:00.000Z"
+      }
+    ],
+    "createdAt": "2020-03-01T00:00:00.000Z",
+    "updatedAt": "2023-09-20T14:30:00.000Z"
+  },
+  {
+    "id": "774f9600-g49d-43d4-c938-668877662222",
+    "userId": "9e6fd46-2ed0-6996-af95-9c369056cf1f",
+    "headline": "Technical Lead with Very Long Headline That Tests Layout Wrapping and Truncation in Various Views",
+    "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    "avatarUrl": "https://example.com/avatars/bob-wilson.jpg",
+    "socialLinks": {
+      "linkedin": "https://linkedin.com/in/bobwilson",
+      "github": "https://github.com/bobwilson",
+      "website": "https://bobwilson.tech"
+    },
+    "experiences": [
+      {
+        "id": "45f3g632-f54e-6e3c-b7c9-d30775646604",
+        "profileId": "774f9600-g49d-43d4-c938-668877662222",
+        "title": "Technical Lead",
+        "company": "Enterprise Solutions Ltd",
+        "startDate": "2019-01-01T00:00:00.000Z",
+        "endDate": null,
+        "description": "Leading a team of 10 developers in building enterprise-scale applications.",
+        "createdAt": "2019-01-01T00:00:00.000Z",
+        "updatedAt": "2023-09-20T14:30:00.000Z"
+      }
+    ],
+    "createdAt": "2019-01-01T00:00:00.000Z",
+    "updatedAt": "2023-09-20T14:30:00.000Z"
+  },
+  {
+    "id": "885g0700-h59e-44d4-d049-779988773333",
+    "userId": "0f7ge57-3fe1-7007-bg06-0d47a167dg2g",
+    "headline": "Product Manager",
+    "bio": "Short bio for testing minimal content layout.",
+    "avatarUrl": "https://example.com/avatars/sarah-jones.jpg",
+    "socialLinks": {
+      "linkedin": null,
+      "github": null,
+      "website": null
+    },
+    "experiences": [],
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "updatedAt": "2023-09-20T14:30:00.000Z"
+  },
+  {
+    "id": "996h1800-i69f-45d4-e150-880099884444",
+    "userId": "1g8hf68-4gf2-8118-ch17-1e58b278eh3h",
+    "headline": "Mobile Developer",
+    "bio": null,
+    "avatarUrl": "https://example.com/avatars/amy-lee.jpg",
+    "socialLinks": {
+      "linkedin": "https://linkedin.com/in/amylee",
+      "github": "https://github.com/amylee",
+      "website": null
+    },
+    "experiences": [
+      {
+        "id": "56g4h743-g65f-7f4d-c8d0-e41886757705",
+        "profileId": "996h1800-i69f-45d4-e150-880099884444",
+        "title": "Senior Mobile Developer",
+        "company": "Mobile Apps Co",
+        "startDate": "2022-06-01T00:00:00.000Z",
+        "endDate": null,
+        "description": "iOS and Android development",
+        "createdAt": "2022-06-01T00:00:00.000Z",
+        "updatedAt": "2023-09-20T14:30:00.000Z"
+      }
+    ],
+    "createdAt": "2022-06-01T00:00:00.000Z",
+    "updatedAt": "2023-09-20T14:30:00.000Z"
+  }
+]
