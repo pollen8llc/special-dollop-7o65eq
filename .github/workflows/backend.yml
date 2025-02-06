@@ -1,0 +1,150 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths: ['src/backend/**']
+  pull_request:
+    branches: [main]
+    paths: ['src/backend/**']
+
+# Permissions configuration for security
+permissions:
+  contents: read
+  packages: read
+  deployments: write
+  checks: write
+
+env:
+  NODE_VERSION: '18'
+  RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+  NODE_ENV: production
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'src/backend/package-lock.json'
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            src/backend/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('src/backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        working-directory: src/backend
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: src/backend
+        run: npm run lint
+
+      - name: Run unit tests
+        working-directory: src/backend
+        run: npm run test -- --maxWorkers=2 --coverage
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          REDIS_URL: redis://localhost:6379
+
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: src/backend/coverage
+          retention-days: 14
+
+  build-deploy:
+    name: Build and Deploy
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Login to Railway
+        run: railway login
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Build Docker image
+        working-directory: src/backend
+        run: |
+          docker build \
+            --cache-from type=registry,ref=linkedin-profiles-backend \
+            --build-arg NODE_ENV=production \
+            -t linkedin-profiles-backend \
+            -f docker/Dockerfile .
+
+      - name: Deploy to Railway
+        working-directory: src/backend
+        run: |
+          railway up \
+            --service backend \
+            --environment production \
+            --detach
+
+      - name: Verify deployment health
+        run: |
+          # Wait for deployment to stabilize
+          sleep 30
+          # Check health endpoint
+          HEALTH_CHECK_URL=$(railway url --service backend)/api/health
+          for i in {1..6}; do
+            if curl -s -f "$HEALTH_CHECK_URL"; then
+              echo "Health check passed"
+              exit 0
+            fi
+            echo "Waiting for service to be healthy..."
+            sleep 10
+          done
+          echo "Health check failed"
+          exit 1
+
+      - name: Notify deployment status
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { job, conclusion } = context;
+            const status = conclusion === 'success' ? '✅' : '❌';
+            const message = `${status} Backend deployment ${conclusion}`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              body: message
+            });
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
