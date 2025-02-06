@@ -1,0 +1,30 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "types": ["cypress", "node"],
+    "moduleResolution": "node",
+    "baseUrl": "../",
+    "paths": {
+      "~/*": ["./app/*"]
+    },
+    "strict": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "noEmit": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "../cypress.config.ts"
+  ],
+  "exclude": [
+    "../node_modules",
+    "../build",
+    "../public/build"
+  ]
+}
