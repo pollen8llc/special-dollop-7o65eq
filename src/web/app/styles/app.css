@@ -1,0 +1,161 @@
+/* Main application stylesheet for LinkedIn Profiles Gallery */
+/* tailwindcss v3.3.x */
+
+@import './tailwind.css';
+@import './animations.css';
+
+/* Base layer customizations */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply antialiased bg-background text-foreground transition-colors duration-300;
+  }
+
+  ::selection {
+    @apply bg-primary/20;
+  }
+}
+
+/* Component layer customizations */
+@layer components {
+  /* Container layouts */
+  .container {
+    @apply mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;
+  }
+
+  /* Profile card with GPU acceleration */
+  .profile-card {
+    @apply will-change-transform perspective-1000 
+           bg-card rounded-lg shadow-lg overflow-hidden
+           transition-all duration-300 ease-out
+           hover:shadow-xl hover:rotate-y-3
+           dark:bg-card/95 dark:border-border
+           gpu-accelerated;
+  }
+
+  /* Glass morphism effects */
+  .glass-panel {
+    @apply backdrop-blur-sm bg-background/80 
+           will-change-backdrop-filter
+           border border-border/50
+           dark:bg-background/40 dark:border-border/30;
+  }
+
+  /* Form elements */
+  .form-input {
+    @apply w-full rounded-md border border-input 
+           bg-transparent px-3 py-2 text-sm
+           focus:ring-2 focus:ring-primary/50 
+           transition-shadow duration-200
+           dark:border-border dark:focus:ring-primary/30;
+  }
+
+  /* Navigation elements */
+  .nav-link {
+    @apply relative px-3 py-2 text-foreground/80
+           hover:text-foreground transition-colors
+           after:absolute after:bottom-0 after:left-0
+           after:h-0.5 after:w-full after:scale-x-0
+           after:bg-primary after:transition-transform
+           hover:after:scale-x-100;
+  }
+}
+
+/* Utility layer customizations */
+@layer utilities {
+  /* Performance optimizations */
+  .gpu-accelerated {
+    @apply will-change-transform translate-z-0;
+  }
+
+  .content-visibility-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 1000px;
+  }
+
+  /* Responsive touch interactions */
+  .touch-hover {
+    @apply hover:opacity-90 active:opacity-100 
+           transition-opacity duration-150;
+  }
+
+  /* Accessibility */
+  .reduced-motion {
+    @apply motion-reduce:transform-none 
+           motion-reduce:transition-none;
+  }
+
+  /* Grid layouts */
+  .profile-grid {
+    @apply grid grid-cols-1 gap-4 
+           sm:grid-cols-2 sm:gap-6 
+           lg:grid-cols-3 lg:gap-8
+           content-visibility-auto;
+  }
+
+  /* Dark mode optimizations */
+  .dark-optimize {
+    @apply dark:bg-gradient-to-b 
+           dark:from-background 
+           dark:to-background/95;
+  }
+}
+
+/* Print optimizations */
+@media print {
+  .profile-card {
+    @apply shadow-none transform-none 
+           break-inside-avoid-page;
+  }
+
+  .glass-panel {
+    @apply bg-transparent backdrop-blur-none 
+           border-black/20;
+  }
+
+  .nav-link {
+    @apply text-black no-underline;
+  }
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .profile-card {
+    @apply border-2;
+  }
+
+  .glass-panel {
+    @apply bg-canvas text-text border;
+  }
+}
+
+/* Loading states */
+.skeleton {
+  @apply animate-shimmer bg-gradient-to-r 
+         from-background via-muted to-background
+         bg-[length:200%_100%]
+         dark:from-background/50 
+         dark:via-muted/50 
+         dark:to-background/50;
+}
+
+/* Focus styles */
+.focus-ring {
+  @apply focus-visible:outline-none 
+         focus-visible:ring-2 
+         focus-visible:ring-primary 
+         focus-visible:ring-offset-2
+         focus-visible:ring-offset-background;
+}
