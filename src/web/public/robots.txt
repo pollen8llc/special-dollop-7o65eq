@@ -1,0 +1,22 @@
+# Version: 1.0
+# Last Updated: 2023
+
+# Global rules for all web crawlers
+User-agent: *
+
+# Allow crawling of public pages
+Allow: /
+Allow: /gallery
+Allow: /profiles
+
+# Prevent crawling of sensitive routes
+Disallow: /auth/*
+Disallow: /api/*
+Disallow: /settings/*
+Disallow: /admin/*
+
+# Rate limiting to prevent server overload
+Crawl-delay: 10
+
+# XML Sitemap location
+Sitemap: https://[domain]/sitemap.xml
