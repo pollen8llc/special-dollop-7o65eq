@@ -1,0 +1,126 @@
+version: 2
+updates:
+  # Backend NPM dependencies
+  - package-ecosystem: "npm"
+    directory: "/src/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    versioning-strategy: "auto"
+    allow:
+      - dependency-type: "production"
+    assignees:
+      - "$REPO_OWNER"
+    reviewers:
+      - "$REPO_OWNER"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+    groups:
+      clerk:
+        patterns:
+          - "@clerk/*"
+        update-types:
+          - "major"
+          - "minor"
+          - "patch"
+      prisma:
+        patterns:
+          - "@prisma/*"
+          - "prisma"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Frontend NPM dependencies
+  - package-ecosystem: "npm"
+    directory: "/src/web"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    versioning-strategy: "auto"
+    allow:
+      - dependency-type: "production"
+    assignees:
+      - "$REPO_OWNER"
+    reviewers:
+      - "$REPO_OWNER"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+    groups:
+      remix:
+        patterns:
+          - "@remix-run/*"
+        update-types:
+          - "minor"
+          - "patch"
+      clerk:
+        patterns:
+          - "@clerk/*"
+        update-types:
+          - "major"
+          - "minor"
+          - "patch"
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Backend Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/src/backend/docker"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    assignees:
+      - "$REPO_OWNER"
+    reviewers:
+      - "$REPO_OWNER"
+    commit-message:
+      prefix: "chore(docker)"
+      include: "scope"
+
+  # Frontend Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/src/web/docker"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    assignees:
+      - "$REPO_OWNER"
+    reviewers:
+      - "$REPO_OWNER"
+    commit-message:
+      prefix: "chore(docker)"
+      include: "scope"
+
+  # GitHub Actions workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    assignees:
+      - "$REPO_OWNER"
+    reviewers:
+      - "$REPO_OWNER"
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"
