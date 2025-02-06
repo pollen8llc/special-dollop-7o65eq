@@ -1,0 +1,32 @@
+* @organization/admin-team
+
+# Backend code ownership
+/src/backend/ @organization/backend-team
+/src/backend/prisma/ @organization/database-team
+/src/backend/src/api/ @organization/api-team
+/src/backend/tests/ @organization/qa-team
+
+# Frontend code ownership  
+/src/web/ @organization/frontend-team
+/src/web/app/components/ @organization/ui-team
+/src/web/tests/ @organization/qa-team
+/src/web/cypress/ @organization/qa-team
+
+# Infrastructure and deployment
+/infrastructure/ @organization/devops-team
+*.tf @organization/devops-team
+.github/workflows/ @organization/devops-team
+docker-compose.yml @organization/devops-team
+Dockerfile @organization/devops-team
+
+# Database schema
+*.schema.prisma @organization/database-team
+
+# Package management
+package.json @organization/lead-developers
+package-lock.json @organization/lead-developers 
+yarn.lock @organization/lead-developers
+
+# Test files
+*.test.ts @organization/qa-team
+*.test.tsx @organization/qa-team
