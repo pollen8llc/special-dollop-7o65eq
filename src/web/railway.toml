@@ -1,0 +1,58 @@
+# Railway platform configuration for LinkedIn Profiles Gallery web application
+# Version: 1.0.0
+
+[build]
+# Use nixpacks as the builder for consistent builds
+builder = "nixpacks"
+
+# Build command from package.json scripts
+buildCommand = "npm run build"
+
+# Watch patterns for file changes during development
+watchPatterns = [
+  "src/**/*.ts",
+  "src/**/*.tsx",
+  "app/**/*.ts",
+  "app/**/*.tsx"
+]
+
+# Custom Dockerfile path
+dockerfilePath = "docker/Dockerfile"
+
+[deploy]
+# Start command from package.json scripts
+startCommand = "npm start"
+
+# Health check configuration
+healthcheckPath = "/health"
+healthcheckTimeout = 10
+
+# Restart policy
+restartPolicyType = "on-failure"
+restartPolicyMaxRetries = 3
+
+# Scaling configuration
+[deploy.numReplicas]
+min = 1
+max = 10
+
+# Resource limits as per infrastructure requirements
+[deploy.resources]
+cpu = 1000    # 1 CPU core in millicores
+memory = 512  # 512MB RAM
+
+# Domain configuration
+[[deploy.domains]]
+production = "profiles.example.com"
+staging = "staging.profiles.example.com"
+development = "dev.profiles.example.com"
+
+# Required environment variables
+[deploy.env]
+required = [
+  "NODE_ENV",
+  "PORT",
+  "REDIS_URL",
+  "CLERK_PUBLISHABLE_KEY",
+  "CLERK_SECRET_KEY"
+]
