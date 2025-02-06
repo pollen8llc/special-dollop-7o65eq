@@ -1,0 +1,202 @@
+name: LinkedIn Profiles Gallery Web CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths: ['src/web/**']
+  pull_request:
+    branches: [main]
+    paths: ['src/web/**']
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly security scans
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '18'
+  RAILWAY_STATIC_ENVIRONMENT: true
+  COVERAGE_THRESHOLD: 80
+
+jobs:
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript, typescript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+      - name: Run Snyk Security Scan
+        uses: snyk/actions/node@v3
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+  build:
+    name: Build and Test
+    needs: security-scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: src/web/package.json
+
+      - name: Cache Build Artifacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            src/web/node_modules
+            src/web/.cache
+            src/web/build
+          key: ${{ runner.os }}-build-${{ hashFiles('src/web/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
+      - name: Install Dependencies
+        working-directory: src/web
+        run: |
+          npm ci
+          npm audit fix
+
+      - name: Type Check
+        working-directory: src/web
+        run: npm run typecheck
+
+      - name: Lint
+        working-directory: src/web
+        run: npm run lint
+
+      - name: Unit Tests
+        working-directory: src/web
+        run: |
+          npm run test:coverage
+          echo "Checking test coverage meets threshold..."
+          npm run test:coverage | grep -q "All files.*${COVERAGE_THRESHOLD}.*%"
+
+      - name: E2E Tests
+        working-directory: src/web
+        run: npm run cypress:run
+
+      - name: Performance Tests
+        working-directory: src/web
+        run: npm run test:perf
+
+      - name: Build Application
+        working-directory: src/web
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: src/web/build
+
+  deploy-staging:
+    name: Deploy to Staging
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://staging.profiles.example.com
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+          path: src/web/build
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway Staging
+        working-directory: src/web
+        run: |
+          railway up \
+            --environment staging \
+            --service web \
+            --detach
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Health Check
+        run: |
+          echo "Waiting for deployment to stabilize..."
+          sleep 30
+          curl -f https://staging.profiles.example.com/health || exit 1
+
+  deploy-production:
+    name: Deploy to Production
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://profiles.example.com
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+          path: src/web/build
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway Production
+        working-directory: src/web
+        run: |
+          railway up \
+            --environment production \
+            --service web \
+            --detach
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Verify Deployment
+        run: |
+          echo "Performing post-deployment verification..."
+          curl -f https://profiles.example.com/health || exit 1
+          
+          # Performance check
+          response_time=$(curl -w "%{time_total}" -o /dev/null -s https://profiles.example.com)
+          if (( $(echo "$response_time > 0.2" | bc -l) )); then
+            echo "Response time exceeds 200ms threshold: ${response_time}s"
+            exit 1
+          fi
+
+      - name: Send Deployment Notification
+        if: always()
+        run: |
+          curl -X POST ${{ secrets.DEPLOYMENT_NOTIFICATION_WEBHOOK }} \
+            -H "Content-Type: application/json" \
+            -d "{\"text\":\"Deployment to production ${{ job.status }}: ${{ github.repository }}@${{ github.sha }}\"}"
