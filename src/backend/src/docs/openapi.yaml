@@ -1,0 +1,232 @@
+openapi: 3.0.0
+info:
+  title: LinkedIn Profiles Gallery API
+  version: 1.0.0
+  description: API documentation for the LinkedIn Profiles Gallery application
+  contact:
+    name: API Support
+    email: support@linkedinprofiles.com
+
+servers:
+  - url: https://api.linkedinprofiles.com/v1
+    description: Production server
+  - url: https://staging-api.linkedinprofiles.com/v1
+    description: Staging server
+
+tags:
+  - name: Authentication
+    description: Authentication and authorization endpoints
+  - name: Profiles
+    description: Profile management endpoints
+  - name: Experiences
+    description: Experience management endpoints
+
+paths:
+  /auth:
+    post:
+      summary: Authenticate user with LinkedIn OAuth
+      description: Authenticates a user using LinkedIn OAuth and returns a session token
+      tags:
+        - Authentication
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/auth.schema.yaml#/components/schemas/LinkedInAuthRequest'
+      responses:
+        '200':
+          description: Successful authentication
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: Rate limit ceiling for the endpoint
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: Number of requests remaining
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/auth.schema.yaml#/components/schemas/AuthSession'
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/auth.schema.yaml#/components/schemas/AuthError'
+        '429':
+          description: Too many requests
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+              description: Time to wait before retrying
+
+  /profiles:
+    get:
+      summary: List profiles with pagination
+      description: Retrieves a paginated list of professional profiles
+      tags:
+        - Profiles
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number for pagination
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Number of items per page
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [createdAt, updatedAt, headline]
+          description: Field to sort results by
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: Sort direction
+      responses:
+        '200':
+          description: List of profiles
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              description: Caching directives
+            ETag:
+              schema:
+                type: string
+              description: Entity tag for caching
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/profile.schema.yaml#/components/schemas/ProfileListResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+    
+    post:
+      summary: Create a new profile
+      description: Creates a new professional profile for the authenticated user
+      tags:
+        - Profiles
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/profile.schema.yaml#/components/schemas/CreateProfileRequest'
+      responses:
+        '201':
+          description: Profile created successfully
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/profile.schema.yaml#/components/schemas/ProfileResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from successful authentication
+
+  responses:
+    UnauthorizedError:
+      description: Authentication failed or token expired
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/auth.schema.yaml#/components/schemas/AuthError'
+    
+    ValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+                enum: [VALIDATION_ERROR]
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                    message:
+                      type: string
+    
+    TooManyRequests:
+      description: Rate limit exceeded
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+          description: Time to wait before retrying
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+                enum: [RATE_LIMIT_EXCEEDED]
+              message:
+                type: string
+              retryAfter:
+                type: integer
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          enum:
+            - BAD_REQUEST
+            - UNAUTHORIZED
+            - FORBIDDEN
+            - NOT_FOUND
+            - VALIDATION_ERROR
+            - RATE_LIMIT_EXCEEDED
+            - INTERNAL_ERROR
+        message:
+          type: string
+        details:
+          type: object
+          nullable: true
+      required:
+        - code
+        - message
