@@ -1,0 +1,158 @@
+/* Import Tailwind CSS layers */
+@import './tailwind.css' layer(base);
+@import './tailwind.css' layer(components);
+
+/* Performance-optimized keyframe animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    will-change: opacity;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scale {
+  from {
+    transform: scale(0.95);
+    will-change: transform;
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes rotate-3d {
+  from {
+    transform: perspective(1000px) rotate3d(0, 1, 0, 15deg);
+    will-change: transform;
+  }
+  to {
+    transform: perspective(1000px) rotate3d(0, 1, 0, -15deg);
+  }
+}
+
+@keyframes loading-spinner {
+  0% {
+    transform: rotate(0deg);
+    will-change: transform;
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+    will-change: background-position;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* GPU-accelerated animation utility classes */
+.animate-fade-in {
+  animation: fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+.animate-rotate-3d {
+  animation: rotate-3d 2s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.animate-loading {
+  animation: loading-spinner 1.2s linear infinite;
+  transform-origin: center center;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(
+    90deg,
+    var(--background) 25%,
+    var(--muted) 50%,
+    var(--background) 75%
+  );
+  background-size: 200% 100%;
+  will-change: background-position;
+}
+
+/* Touch device optimizations */
+@media (hover: none) {
+  .animate-rotate-3d {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-rotate-3d {
+    animation: none;
+    transform: none;
+  }
+
+  .animate-loading {
+    animation-duration: 2s;
+  }
+
+  .animate-shimmer {
+    animation: none;
+    background: var(--muted);
+  }
+}
+
+/* Print media optimizations */
+@media print {
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-rotate-3d,
+  .animate-loading,
+  .animate-shimmer {
+    animation: none;
+    transform: none;
+    background: none;
+  }
+}
