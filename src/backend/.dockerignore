@@ -1,0 +1,87 @@
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist
+build
+coverage
+.nyc_output
+
+# Development and test files
+tests
+__tests__
+**/*.test.ts
+**/*.spec.ts
+jest.config.ts
+test-results
+
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Environment and secrets
+.env
+.env.*
+*.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# IDE and editor files
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+
+# Development configuration
+.eslintrc.js
+.prettierrc
+.editorconfig
+tsconfig.json
+tsconfig.*.json
+
+# Documentation
+README.md
+CHANGELOG.md
+docs
+*.md
+
+# Docker files
+Dockerfile
+docker-compose*.yml
+.docker
+
+# Prisma development files
+prisma/migrations
+prisma/seed.ts
+prisma/*.db
+prisma/dev.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Cache directories
+.npm
+.eslintcache
+.prettier-cache
+
+# Development scripts
+scripts
+nodemon.json
+
+# Temporary files
+tmp
+temp
+.tmp
+*.tmp
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
