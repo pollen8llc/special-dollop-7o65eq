@@ -1,0 +1,168 @@
+openapi: 3.0.3
+info:
+  title: LinkedIn Profiles Gallery Authentication Schemas
+  version: 1.0.0
+  description: OpenAPI schema definitions for authentication endpoints and data structures
+
+components:
+  schemas:
+    AuthUser:
+      type: object
+      description: Authenticated user information with profile details and roles
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the user
+        email:
+          type: string
+          format: email
+          description: User's email address
+        firstName:
+          type: string
+          nullable: true
+          description: User's first name
+        lastName:
+          type: string
+          nullable: true
+          description: User's last name
+        imageUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: URL to user's profile image
+        roles:
+          type: array
+          items:
+            type: string
+            enum: [USER, ADMIN, MODERATOR]
+          description: Array of user roles for RBAC
+        lastLoginAt:
+          type: string
+          format: date-time
+          description: Timestamp of user's last login
+      required:
+        - id
+        - email
+        - roles
+        - lastLoginAt
+
+    AuthSession:
+      type: object
+      description: Authentication session information with tokens
+      properties:
+        user:
+          $ref: '#/components/schemas/AuthUser'
+        token:
+          type: string
+          format: jwt
+          description: JWT access token
+        expiresIn:
+          type: integer
+          description: Token expiration time in seconds
+        refreshToken:
+          type: string
+          description: Refresh token for obtaining new access tokens
+        sessionId:
+          type: string
+          format: uuid
+          description: Unique session identifier
+      required:
+        - user
+        - token
+        - expiresIn
+        - refreshToken
+        - sessionId
+
+    AuthError:
+      type: object
+      description: Authentication error response
+      properties:
+        code:
+          type: string
+          enum:
+            - INVALID_CREDENTIALS
+            - TOKEN_EXPIRED
+            - INVALID_TOKEN
+            - INSUFFICIENT_PERMISSIONS
+            - MFA_REQUIRED
+            - RATE_LIMIT_EXCEEDED
+          description: Error code identifier
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error context
+          nullable: true
+      required:
+        - code
+        - message
+
+    LinkedInAuthRequest:
+      type: object
+      description: LinkedIn OAuth authentication request
+      properties:
+        code:
+          type: string
+          description: OAuth authorization code
+        redirectUri:
+          type: string
+          format: uri
+          description: OAuth redirect URI
+        state:
+          type: string
+          description: OAuth state parameter for CSRF protection
+      required:
+        - code
+        - redirectUri
+        - state
+
+    TokenValidation:
+      type: object
+      description: JWT token validation response
+      properties:
+        valid:
+          type: boolean
+          description: Token validity status
+        payload:
+          type: object
+          properties:
+            sub:
+              type: string
+              description: Subject identifier (user ID)
+            email:
+              type: string
+              format: email
+              description: User's email address
+            roles:
+              type: array
+              items:
+                type: string
+              description: Array of user roles
+            exp:
+              type: integer
+              description: Token expiration timestamp
+            sessionId:
+              type: string
+              format: uuid
+              description: Unique session identifier
+          required:
+            - sub
+            - email
+            - roles
+            - exp
+            - sessionId
+      required:
+        - valid
+        - payload
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from successful authentication
+
+security:
+  - BearerAuth: []
