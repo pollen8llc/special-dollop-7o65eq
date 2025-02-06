@@ -1,0 +1,85 @@
+# AlertManager Configuration v0.25.0
+# Handles alert routing, grouping and notifications for LinkedIn Profiles Gallery monitoring
+
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: ${SMTP_HOST}:587
+  smtp_from: ${ALERT_FROM_EMAIL}
+  smtp_auth_username: ${SMTP_USERNAME}
+  smtp_auth_password: ${SMTP_PASSWORD}
+  smtp_require_tls: true
+
+# Route configuration for alert handling
+route:
+  # Default grouping
+  group_by: ['alertname', 'service', 'severity', 'instance']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  receiver: team-email
+
+  # Specialized routing rules
+  routes:
+    # Critical alerts route
+    - match:
+        severity: critical
+      receiver: critical-alerts
+      group_wait: 0s
+      group_interval: 1m
+      repeat_interval: 1h
+
+    # Database alerts route
+    - match:
+        service: database
+      group_wait: 10s
+      group_interval: 2m
+
+    # Cache alerts route
+    - match:
+        service: cache
+      group_wait: 15s
+      group_interval: 3m
+
+# Alert receivers configuration
+receivers:
+  # Default team email notifications
+  - name: team-email
+    email_configs:
+      - to: ${ALERT_TO_EMAIL}
+        send_resolved: true
+        headers:
+          subject: '{{ template "email.default.subject" . }}'
+          html: '{{ template "email.default.html" . }}'
+        html: '{{ template "email.custom.html" . }}'
+
+  # Critical alerts notifications
+  - name: critical-alerts
+    email_configs:
+      - to: ${ALERT_CRITICAL_EMAIL}
+        send_resolved: true
+        headers:
+          subject: '[CRITICAL] {{ template "email.default.subject" . }}'
+          html: '{{ template "email.critical.html" . }}'
+        html: '{{ template "email.critical.html" . }}'
+
+# Alert inhibition rules
+inhibit_rules:
+  # Suppress warning alerts if critical alert exists
+  - source_match:
+      severity: critical
+    target_match:
+      severity: warning
+    equal: ['alertname', 'service', 'instance']
+
+  # Suppress database warnings if critical database alert exists
+  - source_match:
+      severity: critical
+      service: database
+    target_match:
+      severity: warning
+      service: database
+    equal: ['instance']
+
+# Custom notification templates
+templates:
+  - /etc/alertmanager/templates/*.tmpl
