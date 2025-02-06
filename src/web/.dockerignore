@@ -1,0 +1,67 @@
+node_modules
+.pnpm-store
+yarn.lock
+package-lock.json
+
+# Version Control
+.git
+.gitignore
+.github
+
+# Logs and Debugging
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment and Secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Build and Cache
+build
+.cache
+public/build
+.remix
+api/_build
+
+# Testing and Coverage
+coverage
+cypress/videos
+cypress/screenshots
+__tests__
+**/*.test.*
+
+# Development Tools
+.vscode
+.idea
+.DS_Store
+*.swp
+*.swo
+
+# Configuration Files
+.eslintrc*
+.prettierrc*
+jest.config.*
+cypress.config.*
+tsconfig.json
+remix.config.*
+tailwind.config.*
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE
+docs
+
+# Docker
+.dockerignore
+docker-compose*.yml
+
+# Temporary Files
+tmp
+temp
+*.tmp
