@@ -1,0 +1,196 @@
+openapi: 3.0.0
+info:
+  title: Experience Schema Definitions
+  version: 1.0.0
+  description: OpenAPI schema definitions for experience-related operations in the LinkedIn Profiles Gallery
+
+components:
+  schemas:
+    Experience:
+      type: object
+      required:
+        - id
+        - profile_id
+        - title
+        - company
+        - start_date
+        - description
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the experience entry
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        profile_id:
+          type: string
+          format: uuid
+          description: ID of the profile this experience belongs to
+          example: "123e4567-e89b-12d3-a456-426614174001"
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Job title or position
+          example: "Senior Software Engineer"
+        company:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Company or organization name
+          example: "Tech Corp Inc."
+        start_date:
+          type: string
+          format: date
+          description: Start date of the experience
+          example: "2020-01-01"
+        end_date:
+          type: string
+          format: date
+          nullable: true
+          description: End date of the experience, null if current position
+          example: "2023-12-31"
+        description:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          description: Detailed description of the experience
+          example: "Led development of microservices architecture..."
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the experience was created
+          example: "2023-01-01T00:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the experience was last updated
+          example: "2023-01-01T00:00:00Z"
+
+    CreateExperienceRequest:
+      type: object
+      required:
+        - title
+        - company
+        - start_date
+        - description
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Job title or position
+          example: "Senior Software Engineer"
+        company:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Company or organization name
+          example: "Tech Corp Inc."
+        start_date:
+          type: string
+          format: date
+          description: Start date of the experience
+          example: "2020-01-01"
+        end_date:
+          type: string
+          format: date
+          nullable: true
+          description: End date of the experience, null if current position
+          example: "2023-12-31"
+        description:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          description: Detailed description of the experience
+          example: "Led development of microservices architecture..."
+
+    UpdateExperienceRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Job title or position
+          example: "Lead Software Engineer"
+        company:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Company or organization name
+          example: "Tech Corp Inc."
+        start_date:
+          type: string
+          format: date
+          description: Start date of the experience
+          example: "2020-01-01"
+        end_date:
+          type: string
+          format: date
+          nullable: true
+          description: End date of the experience, null if current position
+          example: "2023-12-31"
+        description:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          description: Detailed description of the experience
+          example: "Led development of microservices architecture..."
+
+    ExperienceResponse:
+      type: object
+      required:
+        - success
+        - error
+        - data
+      properties:
+        success:
+          type: boolean
+          description: Indicates if the operation was successful
+          example: true
+        error:
+          type: string
+          nullable: true
+          description: Error message if operation failed
+          example: null
+        data:
+          $ref: '#/components/schemas/Experience'
+          description: Experience data
+
+    ExperienceListResponse:
+      type: object
+      required:
+        - success
+        - error
+        - data
+      properties:
+        success:
+          type: boolean
+          description: Indicates if the operation was successful
+          example: true
+        error:
+          type: string
+          nullable: true
+          description: Error message if operation failed
+          example: null
+        data:
+          type: array
+          description: List of experience entries
+          items:
+            $ref: '#/components/schemas/Experience'
+        page:
+          type: integer
+          description: Current page number
+          minimum: 1
+          example: 1
+        pageSize:
+          type: integer
+          description: Number of items per page
+          minimum: 1
+          maximum: 100
+          example: 10
+        total:
+          type: integer
+          description: Total number of items
+          minimum: 0
+          example: 50
