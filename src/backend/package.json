@@ -25,7 +25,7 @@
     "docker:run": "docker-compose -f docker/docker-compose.yml up"
   },
   "dependencies": {
-    "@clerk/clerk-sdk-node": "^4.10.0",
+    "@clerk/clerk-sdk-node": "^5.1.6",
     "@prisma/client": "^4.0.0",
     "bcrypt": "^5.1.0",
     "compression": "^1.7.4",
