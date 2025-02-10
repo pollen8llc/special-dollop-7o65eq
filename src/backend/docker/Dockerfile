@@ -1,5 +1,5 @@
 # Stage 1: Builder
-FROM node:18-alpine AS builder
+FROM node:23-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -21,7 +21,7 @@ RUN npm run prisma:generate \
     && npm prune --production
 
 # Stage 2: Production
-FROM node:18-alpine
+FROM node:23-alpine
 
 # Set working directory
 WORKDIR /app
