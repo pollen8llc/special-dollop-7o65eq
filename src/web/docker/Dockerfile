@@ -1,5 +1,5 @@
 # Base stage with Node.js and common dependencies
-FROM node:18-alpine AS base
+FROM node:23-alpine AS base
 
 # Set environment variables
 ENV NODE_ENV=production \
@@ -46,7 +46,7 @@ FROM base AS builder
 RUN npm run build
 
 # Production stage
-FROM node:18-alpine AS production
+FROM node:23-alpine AS production
 
 # Set production environment
 ENV NODE_ENV=production \
