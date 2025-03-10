@@ -34,7 +34,7 @@
     "classnames": "^2.0.0",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
-    "framer-motion": "^10.0.0",
+    "framer-motion": "^12.4.10",
     "ioredis": "^5.3.0",
     "ioredis-compression": "^1.0.0",
     "isbot": "^3.0.0",
